@@ -136,10 +136,10 @@ class MathCanvas
     drawXY()
     {
         this.ctx.beginPath();
-        this.ctx.moveTo(0, centerPoint[1]);
-        this.ctx.lineTo(canvas.width, centerPoint[1]);
-        this.ctx.moveTo(centerPoint[0], 0);
-        this.ctx.lineTo(centerPoint[0], canvas.height);
+        this.moveTo(new vec2(-this.center[0], 0));
+        this.lineTo(new vec2(this.center[0], 0));
+        this.moveTo(new vec2(0, -this.center[1]));
+        this.lineTo(new vec2(0, this.center[1]));
         this.ctx.closePath();
         this.ctx.lineWidth = 2.0;
         this.ctx.strokeStyle = '#000';
@@ -219,6 +219,6 @@ slider.oninput = () => {
     mathCanvas.clearRect();
     mathCanvas.drawGrid();
     mathCanvas.drawGrid(linearInterpolation(new vec2(1, 0), new vec2(1, 0.5), parseFloat(slider.value) / 100), linearInterpolation(new vec2(0, 1), new vec2(0.5, 1), parseFloat(slider.value) / 100));
-
+    mathCanvas.drawXY();
     // drawVector(startPos, direction);
 };
