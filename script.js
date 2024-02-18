@@ -53,32 +53,28 @@ class MathCanvas
         this.ctx.lineTo(pos.x, pos.y);
     }
 
-    drawGrid(basis1=new vec2(1, 0.5), basis2=new vec2(0.5, 1), spacing=50, strokeColor='#eee', strokeWidth=1.0)
+    drawGrid(basis1, basis2, spacing=50, strokeColor='#eee', strokeWidth=1.0)
     {
-        console.log(basis1, basis2);
+        if (basis1 == undefined)
+        {
+            basis1 = new vec2(1, 0);
+        }
+        if (basis2 == undefined)
+        {
+            basis2 = new vec2(0, 1);
+        }
+
         this.ctx.beginPath();
 
         const longer = (this.canvas.width > this.canvas.height) ? this.canvas.width : this.canvas.height;
 
         let basis1Start = new vec2(basis1.x * -longer, basis1.y * -longer);
         let basis1End = new vec2(-basis1Start.x, -basis1Start.y);
-        let basis1Theta = Math.atan2(basis1.y, basis1.x);
-        let basis1Space = spacing / Math.sin(basis1Theta);
+        let basis1Theta = Math.atan(basis1.y, basis1.x);
 
-        if (basis1Space == Infinity)
+        if (Math.abs(basis1.y / basis1.x) > 1)
         {
-            for (let i = 0; i <= this.canvas.height; i += spacing)
-            {
-                this.moveTo(new vec2(basis1Start.x, basis1Start.y - i));
-                this.lineTo(new vec2(basis1End.x, basis1End.y - i));
-
-                this.moveTo(new vec2(basis1Start.x, basis1Start.y + i));
-                this.lineTo(new vec2(basis1End.x, basis1End.y + i));
-            }
-        }
-        else
-        {
-            
+            let basis1Space = spacing / Math.sin(basis1Theta);
             for (let i = 0; i <= this.canvas.width; i += basis1Space)
             {
                 console.log(i);
@@ -89,25 +85,26 @@ class MathCanvas
                 this.lineTo(new vec2(basis1End.x + i, basis1End.y));
             }
         }
+        else
+        {
+            let basis1Space = spacing / Math.cos(basis1Theta);
+            for (let i = 0; i <= this.canvas.height; i += spacing)
+            {
+                this.moveTo(new vec2(basis1Start.x, basis1Start.y - i));
+                this.lineTo(new vec2(basis1End.x, basis1End.y - i));
+
+                this.moveTo(new vec2(basis1Start.x, basis1Start.y + i));
+                this.lineTo(new vec2(basis1End.x, basis1End.y + i));
+            }
+        }
         
         let basis2Start = new vec2(basis2.x * -longer, basis2.y * -longer);
         let basis2End = new vec2(-basis2Start.x, -basis2Start.y);
         let basis2Theta = Math.atan2(basis2.y, basis2.x);
-        let basis2Space = spacing / Math.sin(basis2Theta);
 
-        if (basis2Space == Infinity)
+        if (Math.abs(basis2.y / basis2.x) > 1)
         {
-            for (let i = 0; i <= this.canvas.height; i += spacing)
-            {
-                this.moveTo(new vec2(basis2Start.x, basis2Start.y - i));
-                this.lineTo(new vec2(basis2End.x, basis2End.y - i));
-
-                this.moveTo(new vec2(basis2Start.x, basis2Start.y + i));
-                this.lineTo(new vec2(basis2End.x, basis2End.y + i));
-            }
-        }
-        else
-        {
+            let basis2Space = spacing / Math.sin(basis2Theta);
             for (let i = 0; i <= this.canvas.width; i += basis2Space)
             {
                 this.moveTo(new vec2(basis2Start.x - i, basis2Start.y));
@@ -115,6 +112,18 @@ class MathCanvas
 
                 this.moveTo(new vec2(basis2Start.x + i, basis2Start.y));
                 this.lineTo(new vec2(basis2End.x + i, basis2End.y));
+            }
+        }
+        else
+        {
+            let basis2Space = spacing / Math.cos(basis2Theta);
+            for (let i = 0; i <= this.canvas.height; i += spacing)
+            {
+                this.moveTo(new vec2(basis2Start.x, basis2Start.y - i));
+                this.lineTo(new vec2(basis2End.x, basis2End.y - i));
+
+                this.moveTo(new vec2(basis2Start.x, basis2Start.y + i));
+                this.lineTo(new vec2(basis2End.x, basis2End.y + i));
             }
         }
 
@@ -208,8 +217,8 @@ slider.oninput = () => {
     // let direction = new vec2(parseFloat(slider.value), parseFloat(slider.value));
 
     mathCanvas.clearRect();
-    // mathCanvas.drawGrid();
-    mathCanvas.drawGrid(basis1=linearInterpolation(new vec2(1, 0), new vec2(1, 0.5), 0.3), basis2=linearInterpolation(new vec2(0, 1), new vec2(0.5, 1), 0.3));
+    mathCanvas.drawGrid();
+    mathCanvas.drawGrid(linearInterpolation(new vec2(1, 0), new vec2(1, 0.5), parseFloat(slider.value) / 100), linearInterpolation(new vec2(0, 1), new vec2(0.5, 1), parseFloat(slider.value) / 100));
 
     // drawVector(startPos, direction);
 };
