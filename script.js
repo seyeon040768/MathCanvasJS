@@ -141,8 +141,37 @@ class MathCanvas
         this.moveTo(new vec2(0, -this.center[1]));
         this.lineTo(new vec2(0, this.center[1]));
         this.ctx.closePath();
-        this.ctx.lineWidth = 2.0;
-        this.ctx.strokeStyle = '#000';
+        this.ctx.lineWidth = 1.0;
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.stroke();
+    }
+
+    drawVector(startPos, direction, width=2.0, color='#000000')
+    {
+        let endPos = new vec2(startPos.x + direction.x, startPos.y + direction.y);
+        this.ctx.beginPath();
+        this.moveTo(startPos);
+        this.lineTo(endPos);
+        this.ctx.closePath();
+
+        this.ctx.lineWidth = width;
+        this.ctx.strokeStyle = color;
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.moveTo(endPos);
+        let arrowAngle = dgr2rad(60);
+        let theta = Math.atan2(direction.y, direction.x);
+        theta += Math.PI - arrowAngle * 0.5;
+        this.lineTo(new vec2(endPos.x + Math.cos(theta) * 10, endPos.y + Math.sin(theta) * 10));
+        theta += arrowAngle;
+        this.lineTo(new vec2(endPos.x + Math.cos(theta) * 10, endPos.y + Math.sin(theta) * 10));
+        this.lineTo(endPos);
+        this.ctx.fill();
+        this.ctx.closePath();
+        
+        this.ctx.lineWidth = width;
+        this.ctx.strokeStyle = color;
         this.ctx.stroke();
     }
 }
@@ -154,28 +183,6 @@ function init(bDrawXY=true)
     {
         drawXY();
     }
-}
-
-function drawVector(startPos, direction, width=3.0, color='#000000')
-{
-    init(bDrawXY=true);
-
-    let startCanvasPos = vec2.Coordinate2Canvas(startPos);
-    let endCanvasPos = new vec2(startCanvasPos.x + direction.x, startCanvasPos.y - direction.y);
-    
-    this.ctx.beginPath();
-    this.ctx.moveTo(startCanvasPos.x, startCanvasPos.y);
-    this.ctx.lineTo(endCanvasPos.x, endCanvasPos.y);
-
-    let arrowAngle = dgr2rad(60);
-    let theta = Math.atan2(direction.y, direction.x);
-    theta += Math.PI - arrowAngle * 0.5;
-    console.log(theta);
-    this.ctx.lineTo(endCanvasPos.x + Math.cos(theta) * 10, endCanvasPos.y - Math.sin(theta) * 10);
-    // this.ctx.lineTo(startX + 50.5, startY + 100);
-    this.ctx.lineWidth = width;
-    this.ctx.strokeStyle = color;
-    this.ctx.stroke();
 }
 
 // const transformBasis = (value) => {
@@ -201,11 +208,11 @@ function linearInterpolation(startPos, endPos, delta)
 }
 
 
-mathCanvas = new MathCanvas('vectorCanvas');
+let mathCanvas = new MathCanvas('vectorCanvas');
 
 const slider = document.getElementById('Slider');
 slider.min = 0;
-slider.max = 100;
+slider.max = 1000;
 // slider.min = -mathCanvas.center[0];
 // slider.max = mathCanvas.center[0];
 
@@ -213,12 +220,15 @@ mathCanvas.drawGrid();
 
 // Update transformation on slider change
 slider.oninput = () => {
-    // let startPos = new vec2(0, 0);
-    // let direction = new vec2(parseFloat(slider.value), parseFloat(slider.value));
+    let theta = parseFloat(slider.value) / 1000 * Math.PI * 2;
+    let startPos = new vec2(0, 0);
+    let direction = new vec2(1 * Math.cos(theta) - 0 * Math.sin(theta), 1 * Math.sin(theta) + 0 * Math.cos(theta));
+    direction.x *= 100;
+    direction.y *= 100;
 
     mathCanvas.clearRect();
     mathCanvas.drawGrid();
-    mathCanvas.drawGrid(linearInterpolation(new vec2(1, 0), new vec2(1, 0.5), parseFloat(slider.value) / 100), linearInterpolation(new vec2(0, 1), new vec2(0.5, 1), parseFloat(slider.value) / 100));
+    // mathCanvas.drawGrid(linearInterpolation(new vec2(1, 0), new vec2(1, 0.5), parseFloat(slider.value) / 100), linearInterpolation(new vec2(0, 1), new vec2(0.5, 1), parseFloat(slider.value) / 100));
     mathCanvas.drawXY();
-    // drawVector(startPos, direction);
+    mathCanvas.drawVector(startPos, direction);
 };
