@@ -173,11 +173,13 @@ class MathCanvas
         this.ctx.stroke();
     }
 
-    drawVector(startPos, direction, width=2.0, color='#000000')
+    drawVector(location, direction, width=2.0, color='#000000')
     {
-        direction.x *= this.spacing;
-        direction.y *= this.spacing;
-        let endPos = new vec2(startPos.x + direction.x, startPos.y + direction.y);
+        let startPos = new vec2(location.x, location.y);
+        startPos.x *= this.spacing;
+        startPos.y *= this.spacing;
+        let endPos = new vec2(startPos.x + direction.x * this.spacing, startPos.y + direction.y * this.spacing);
+        console.log(startPos, endPos);
         this.ctx.beginPath();
         this.moveTo(startPos);
         this.lineTo(endPos);
@@ -210,33 +212,45 @@ class MathCanvas
 
 
 let mathCanvas = new MathCanvas('vectorCanvas');
+let randomButtom = document.getElementById('vectorButton');
+let vectorPos = document.getElementById('vectorPos');
 
-const slider = document.getElementById('Slider');
-slider.min = -100;
-slider.max = 100;
+// const slider = document.getElementById('Slider');
+// slider.min = -100;
+// slider.max = 100;
 // slider.min = -mathCanvas.center[0];
 // slider.max = mathCanvas.center[0];
 
 mathCanvas.drawGrid();
+mathCanvas.drawVector(new vec2(0, 0), new vec2(5, 5));
 
 // Update transformation on slider change
-slider.oninput = () => {
-    let theta = parseFloat(slider.value) / 1000 * Math.PI * 2;
-    let startPos = new vec2(0, 0);
-    let direction = new vec2(1 * Math.cos(theta) - 0 * Math.sin(theta), 1 * Math.sin(theta) + 0 * Math.cos(theta));
-    direction.x *= 100;
-    direction.y *= 100;
+// slider.oninput = () => {
+//     let theta = parseFloat(slider.value) / 1000 * Math.PI * 2;
+//     let startPos = new vec2(0, 0);
+//     let direction = new vec2(1 * Math.cos(theta) - 0 * Math.sin(theta), 1 * Math.sin(theta) + 0 * Math.cos(theta));
+//     direction.x *= 100;
+//     direction.y *= 100;
 
+//     mathCanvas.clearRect();
+//     // mathCanvas.drawGrid(new vec2(Math.cos(theta), Math.sin(theta)), new vec2(-Math.sin(theta), Math.cos(theta)))
+//     //mathCanvas.drawGrid();
+
+//     let u = linearInterpolation(new vec2(1, 0), new vec2(2, 1), parseFloat(slider.value) / 100);
+//     let v = linearInterpolation(new vec2(0, 1), new vec2(3, 1), parseFloat(slider.value) / 100);
+//     mathCanvas.drawGrid(u, v);
+//     mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(1, 0)));
+//     mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(0, 1)));
+//     mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(2, 1)));
+//     // mathCanvas.drawXY();
+//     // mathCanvas.drawVector(startPos, direction);
+// };
+
+randomButtom.onclick = () => {
+    const randomVec = new vec2(Math.round(Math.random() * 12 - 6), Math.round(Math.random() * 12 - 6));
+
+    vectorPos.innerText = `(${randomVec.x}, ${randomVec.y})`;
     mathCanvas.clearRect();
-    // mathCanvas.drawGrid(new vec2(Math.cos(theta), Math.sin(theta)), new vec2(-Math.sin(theta), Math.cos(theta)))
-    //mathCanvas.drawGrid();
-
-    let u = linearInterpolation(new vec2(1, 0), new vec2(2, 1), parseFloat(slider.value) / 100);
-    let v = linearInterpolation(new vec2(0, 1), new vec2(3, 1), parseFloat(slider.value) / 100);
-    mathCanvas.drawGrid(u, v);
-    mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(1, 0)));
-    mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(0, 1)));
-    mathCanvas.drawVector(new vec2(0, 0), linearTransformation(u, v, new vec2(2, 1)));
-    // mathCanvas.drawXY();
-    // mathCanvas.drawVector(startPos, direction);
-};
+    mathCanvas.drawGrid();
+    mathCanvas.drawVector(new vec2(0, 0), randomVec);
+}
